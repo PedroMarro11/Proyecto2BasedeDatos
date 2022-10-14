@@ -9,6 +9,8 @@ import psycopg2 as pg2
 import getpass
 import funciones as f
 
+
+#Conectar base de datos
 conn = pg2.connect(host="localhost",database="Proyecto2G4",user="postgres",password="murcielago122")
 cur = conn.cursor()
 
@@ -170,7 +172,7 @@ def MenuCliente(usrID):
         ingresoDatosCliente(usrID)
         return
         
-    print("¿Que desea hacer?\n1.Registro diario\n2. Ver y agregar sesiones\n3. Salir")
+    print("¿Que desea hacer?\n1.Registro diario\n2. Ver y agregar sesiones\n3. Ver sesiones programadas e historicas\n4. Cerrar sesion")
     op1 = input()
     if op1 == "1":
         cur.execute("SELECT fecha FROM registro WHERE idusuario = %s AND fecha = CURRENT_DATE", (usrID,))
@@ -187,14 +189,18 @@ def MenuCliente(usrID):
         agregarSesion(usrID)
         return
     if op1 == "3":
-        print("Gracias por usar iHealth")
-        sys.exit()
+        verSesiones(usrID)
+        return
+    if op1 == "4":
+        main()
+        return
     else:
         print("No ha marcado una opcion valida")
         MenuCliente(usrID)
         return
     
-
+def verSesiones(usrID):
+    
 
 def agregarSesion(usrID):
     print("¿Cómo desea buscar la sesion?\n1. fecha \n2. hora\n3. duracion\n4. categoria\n5. instructor\n6. regresar")
@@ -205,6 +211,9 @@ def agregarSesion(usrID):
         cur.execute("SELECT * FROM sesion WHERE fecha = %s", (fecha,))
         for i in range (cur.rowcount):
             print(i, ".",  cur.fetchone())
+
+        seleccion = input("Ingrese el numero de la sesion que desea agregar: ")
+
             
             
     if op == "2":
@@ -223,7 +232,7 @@ def agregarSesion(usrID):
         for i in range (cur.rowcount):
             print(i, ".",  cur.fetchone())
     """if op == "4":
-        categoria = input("Ingrese la categoria de la sesion: ")
+        categoria = input("QUe categoria, 1. ")
         cur.execute("SELECT * FROM sesion WHERE categoria = %s", (categoria,))
         for i in range (cur.rowcount):
             print(i, ".",  cur.fetchone())"""
