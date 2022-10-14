@@ -200,6 +200,24 @@ def MenuCliente(usrID):
         return
     
 def verSesiones(usrID):
+    op2=input()
+    print("1. Ver sesiones programadas")
+    print("2. Ver sesiones historicas ")
+    print("3. Regresar a menu principal")
+    if op2=="1":
+       print("Sus sesiones programadas son las siguientes:")
+       verSesiones(usrID)
+       return
+    if op2=="2":
+        print("Sus sesiones historicas son las siguientes: ")
+        verSesiones(usrID)
+        return
+    if op2=="3":
+        MenuCliente(usrID)
+    else:
+        print("No ha marcado una opcion valida")
+        verSesiones(usrID)
+        return
     
 
 def agregarSesion(usrID):
