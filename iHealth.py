@@ -206,12 +206,12 @@ def verSesiones(usrID):
     print("3. Regresar a menu principal")
     if op2=="1":
        print("Sus sesiones programadas son las siguientes:")
-       cur.execute("select ses.idsesion,ses.idinstructor,ses.fecha,ses.hora,ses.duracion from sesion as ses inner join(select* from usuariosesion as us inner join sesion as s on us.idsesion=s.idsesion inner join usuario as u on us.idusuario=u.idusuario where  s.fecha>current_date and us.idusuario=%s) as k on ses.fecha=k.fecha order by ses.fecha asc",(usrID,))
+       cur.execute("select ses.idsesion,ses.idinstructor,ses.fecha,ses.hora,ses.duracion from sesion as ses where ses.idsesion in(select us.idsesion from usuariosesion as us inner join sesion as s on us.idsesion=s.idsesion inner join usuario as u on us.idusuario=u.idusuario where s.fecha>current_date and us.idusuario=%s) order by ses.fecha asc",(usrID,))
        verSesiones(usrID)
        return
     if op2=="2":
         print("Sus sesiones historicas son las siguientes: ")
-        cur.execute("select ses.idsesion,ses.idinstructor,ses.fecha,ses.hora,ses.duracion from sesion as ses inner join(select* from usuariosesion as us inner join sesion as s on us.idsesion=s.idsesion inner join usuario as u on us.idusuario=u.idusuario where  s.fecha<current_date and us.idusuario=%s) as k on ses.fecha=k.fecha order by ses.fecha desc",(usrID,))
+        cur.execute("select ses.idsesion,ses.idinstructor,ses.fecha,ses.hora,ses.duracion from sesion as ses where ses.idsesion in (select us.idsesion from usuariosesion as us inner join sesion as s on us.idsesion=s.idsesion inner join usuario as u on us.idusuario=u.idusuario where s.fecha<current_date and us.idusuario=%s) order by ses.fecha desc",(usrID,))
         verSesiones(usrID)
         return
     if op2=="3":
