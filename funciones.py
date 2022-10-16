@@ -5,3 +5,6 @@ def registroDiario():
     peso = int(input("Peso en LBS (ingrese un número entero): "))
     
     return peso, calorias
+
+
+

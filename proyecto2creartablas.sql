@@ -62,7 +62,7 @@ CREATE TABLE UsuarioSesion (
             REFERENCES usuario(IDUsuario),
     CONSTRAINT fk_sesion
         FOREIGN KEY(IDSesion)
-            REFERENCES sesion(IDSesion),
+            REFERENCES sesion(IDSesion) ON DELETE CASCADE,
     UNIQUE (IDUsuario, IDSesion)
 );
 
