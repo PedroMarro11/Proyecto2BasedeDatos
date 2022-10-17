@@ -3,6 +3,9 @@
 #Juan Miguel González-Campo Asturias 21077
 #Paulo Raul Sánchez González 21401
 #Pedro Javier Marroquín Abrego 21801
+
+import os
+import urllib.parse as up
 from datetime import date
 from datetime import datetime
 from re import I
@@ -10,11 +13,13 @@ import sys
 from tkinter import Menu
 import psycopg2 as pg2
 import getpass
-import funciones as f
+
+up.uses_netloc.append("postgres")
+url = up.urlparse("postgres://evsboafc:VOcaeA4yK8m4T9F-Ml7qf7-yWJ6UzFpx@babar.db.elephantsql.com/evsboafc")
+conn = pg2.connect(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port )
 
 
 #Conectar base de datos
-conn = pg2.connect(host="localhost",database="Proyecto2G4",user="postgres",password="Itachi1104!")
 cur = conn.cursor()
 
 
@@ -157,7 +162,6 @@ def MenuCliente(usrID):
     print("\n\nMENU CLIENTE")
     cur.execute("SELECT * FROM Usuario WHERE idusuario = %s", (usrID,))
     infoUsr = cur.fetchone()
-    print(infoUsr)
     nombre = infoUsr[5]
 
     #Revisa si el usuario tiene un plan activo
@@ -184,7 +188,7 @@ def MenuCliente(usrID):
             print("Ya ha realizado su registro diario")
             MenuCliente(usrID)
             return
-        peso, calorias = f.registroDiario()
+        peso, calorias = registroDiario()
         cur.execute("INSERT INTO Registro (idusuario, calorias, pesoactual, fecha) VALUES (%s, %s, %s, CURRENT_DATE)", (usrID, calorias, peso))
         conn.commit()
         MenuCliente(usrID)
@@ -222,7 +226,7 @@ def verSesiones(usrID):
     op2=input()
     if op2=="1":
         print("Sus sesiones programadas son las siguientes:")
-        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha >= CURRENT_DATE ORDER BY fecha asc, hora asc",(usrID,))
+        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha >= CURRENT_DATE ORDER BY fecha ASC, hora ASC",(usrID,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
             print("No tiene sesiones programadas")
@@ -234,7 +238,7 @@ def verSesiones(usrID):
         return
     if op2=="2":
         print("Sus sesiones historicas son las siguientes: ")
-        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha < CURRENT_DATE ORDER BY fecha asc, hora DESC",(usrID,))
+        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha < CURRENT_DATE ORDER BY fecha DESC, hora DESC",(usrID,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
             print("No tiene sesiones pasadas")
@@ -388,7 +392,7 @@ def agregarSesion(usrID):
         cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE duracion = %s AND fecha >= CURRENT_DATE ORDER BY fecha asc, hora asc", (duracion,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
-            print("No hay sesiones con en esa hora")
+            print("No hay sesiones con esa duracion")
             agregarSesion(usrID)
             return
         print("Sesiones: ")
@@ -482,15 +486,22 @@ def agregarSesion(usrID):
             print("No ha ingresado un instructor valido")
             agregarSesion(usrID)
             return
+       
         inst = instructores[instructor][0]
-        cur.execute("SELECT idinstructor, activo FROM instructor WHERE idinstructor = %s", (inst))
-        instCheck = cur.fetchone()[1]
-        if instCheck == 0:
+        print(inst)
+        cur.execute("SELECT idinstructor, activo FROM instructor WHERE idinstructor = %s", (inst,))
+        instCheck = cur.fetchone()
+        print(instCheck)
+        if instCheck[1] == '0':
             print("Lo sentimos este instructor no esta disponible")
             agregarSesion(usrID)
             return
         cur.execute("SELECT idsesion, (SELECT nombre FROM instructor WHERE idinstructor = %s) as nombre, (SELECT apellido FROM instructor WHERE idinstructor = %s) as apellido, cat.nombre as Categoria, fecha, hora, duracion FROM sesion NATURAL JOIN categoria as cat WHERE fecha >= CURRENT_DATE AND idinstructor = %s ORDER BY fecha asc, hora asc", (inst,inst,inst))
         sesiones = cur.fetchall()
+        if len(sesiones) == 0:
+            print("No hay sesiones con ese instructor")
+            agregarSesion(usrID)
+            return
         for i in range (0,len(sesiones)):
             print(i+1, ".",  "Instructor: ", sesiones[i][1], sesiones[i][2], ", Categoria:", sesiones[i][3], ", Fecha:", sesiones[i][4], ", Hora:", sesiones[i][5], ", Duracion (mins):", sesiones[i][6])
         seleccion = input("Ingrese el numero de la sesion que desea agregar: ")
@@ -645,6 +656,12 @@ def activarCuenta(usrID):
         activarCuenta(usrID)
         return
 
+def registroDiario():
+    print("Registro diario")
+    calorias = int(input("Calorias estimadas (ingrese un número entero): "))
+    peso = int(input("Peso en LBS (ingrese un número entero): "))
+    
+    return peso, calorias
 
 
 
@@ -1181,7 +1198,7 @@ def modificarUsuario():
     elif op == 5:
         fecha = input("Ingrese la nueva fecha de nacimiento (YYYY-MM-DD): ")
         try:
-            datetime.datetime.strptime(fecha, '%Y-%m-%d')
+            datetime.strptime(fecha, '%Y-%m-%d')
         except ValueError:
             print("No ha ingresado una fecha valida")
             modificarUsuario()
@@ -1251,7 +1268,7 @@ def bajaUsuario():
 
 def reportes():
     print("¿Que reporte desea ver?")
-    print("1. Las 10 sesions que mas usuarios tuvieron.\nSesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6. Salir")
+    print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6. Salir")
     op = input("Ingrese una opcion: ")
     if op.isnumeric():
         op = int(op)
@@ -1288,7 +1305,7 @@ def reportes():
         MenuAdmin()
         return
     elif op == 4:
-        cur.execute("SELECT count(*) FROM usuario WHERE suscripcion = 2 AND fechainicio >= (now() - interval '6 months'")
+        cur.execute("SELECT count(*) FROM usuario WHERE suscripcion = 2 AND fechainicio >= (now() - interval '6 months')")
         cuentas = cur.fetchall()
         print("Cantidad de cuentas diamante creadas en los ultimos 6 meses:", cuentas[0][0])
         MenuAdmin()
@@ -1296,7 +1313,7 @@ def reportes():
     elif op == 5:
         fecha = input("Ingrese la fecha en formato YYYY-MM-DD: ")
         try:
-            datetime.datetime.strptime(fecha, '%Y-%m-%d')
+            datetime.strptime(fecha, '%Y-%m-%d')
         except ValueError:
             print("No ha ingresado una fecha valida")
             reportes()
@@ -1311,7 +1328,29 @@ def reportes():
         return
 
 
-
+def crearAdmin():
+    print("Ingrese los datos del nuevo administrador")
+    cur.execute("SELECT idUsuario FROM Usuario ORDER BY idUsuario DESC LIMIT 1")
+    newID = cur.fetchone()[0] + 1
+    username = input("Username: ")
+    password = input("Password: ")
+    email = input("Email: ")
+    nombre = input("Nombre: ")
+    apellido = input("Apellido: ")
+    fechanac = input("Fecha de nacimiento en formato YYYY-MM-DD: ")
+    try:
+        datetime.strptime(fechanac, '%Y-%m-%d')
+    except ValueError:
+        print("No ha ingresado una fecha valida")
+        crearAdmin()
+        return
+    direccion = input("Direccion: ")
+    cur.execute("INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio) VALUES (%s, %s, %s, %s, '1', %s, %s, %s, %s, '1', CURRENT_DATE)", 
+    (newID, username, password, email, nombre, apellido, fechanac, direccion))
+    conn.commit()
+    print("Administrador creado con exito")
+    MenuAdmin()
+    return
 
 
 
