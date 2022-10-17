@@ -69,7 +69,7 @@ CREATE TABLE UsuarioSesion (
 
 CREATE TABLE infoPago (
     IDUsuario INT,
-    numTajeta VARCHAR(12),
+    numTajeta VARCHAR(16),
     nombreTarjeta varchar(60),
     CONSTRAINT fk_usuario
         FOREIGN KEY(IDUsuario)

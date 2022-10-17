@@ -14,6 +14,8 @@ from tkinter import Menu
 import psycopg2 as pg2
 import getpass
 
+
+#Conexión a la base de datos, utilizamos ElephantSQL para tener la base de datos en nube
 up.uses_netloc.append("postgres")
 url = up.urlparse("postgres://evsboafc:VOcaeA4yK8m4T9F-Ml7qf7-yWJ6UzFpx@babar.db.elephantsql.com/evsboafc")
 conn = pg2.connect(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port )
