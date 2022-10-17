@@ -14,7 +14,7 @@ import funciones as f
 
 
 #Conectar base de datos
-conn = pg2.connect(host="localhost",database="Proyecto2G4",user="postgres",password="murcielago122")
+conn = pg2.connect(host="localhost",database="Proyecto2G4",user="postgres",password="Itachi1104!")
 cur = conn.cursor()
 
 
@@ -43,7 +43,7 @@ def main():
         return
     else:
         sys.exit()
-        
+
 
 
 """Función para hace LOG IN
@@ -58,7 +58,7 @@ def SignIn():
         usr = input("Ingrese su usuario: ")
         usr = usr.lower()
         pas = getpass.getpass("Ingrese su contrasena (sensible a casos): ")
-        
+
         cur.execute("SELECT idusuario FROM Usuario WHERE username = %s AND userpassword = %s", (usr, pas))
 
         if cur.rowcount == 1:
@@ -80,7 +80,7 @@ def SignIn():
             print("\nUsuario o contrasena incorrectos")
             SignIn()
             return
-                    
+
     elif opc == "2":
         main()
         return
@@ -129,7 +129,7 @@ def Register():
             print("Las contrasenas no coinciden")
             Register()
             return
-        
+
         #Se inserta ID generado, datos de usuario, clasificacion de usuario
         cur.execute("INSERT INTO Usuario (idusuario, username, userpassword, email, activo, clasificacion, fechainicio) VALUES (%s, %s, %s, %s, '0','0',CURRENT_DATE)", (newID, usr, pswd, email))
         conn.commit()
@@ -148,7 +148,7 @@ def Register():
 
 #--------------------------------- MENU CLIENTES ---------------------------------#
 """ Menu que miran los clientes
- 
+
 :raram usrID: ID del usuario
 
 :return: None
@@ -175,7 +175,7 @@ def MenuCliente(usrID):
     if nombre is None:
         ingresoDatosCliente(usrID)
         return
-        
+
     print("¿Que desea hacer?\n1. Registro diario\n2. Ver estadísticas de peso y calorias\n3. Ver y agregar sesiones\n4. Ver sesiones programadas e historicas\n5. Cerrar sesion\n6. Cerrar programa")
     op1 = input()
     if op1 == "1":
@@ -190,7 +190,7 @@ def MenuCliente(usrID):
         MenuCliente(usrID)
         return
     if op1 == "2":
-        f.estadisticas(usrID)
+        estadisticas(usrID)
         MenuCliente(usrID)
         return
     if op1 == "3":
@@ -234,10 +234,10 @@ def verSesiones(usrID):
         return
     if op2=="2":
         print("Sus sesiones historicas son las siguientes: ")
-        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha < CURRENT_DATE ORDER BY fecha asc, hora asc",(usrID,))
+        cur.execute("SELECT sesion.idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN usuariosesion as usr ON sesion.idsesion = usr.idsesion LEFT JOIN instructor as inst ON sesion.idinstructor = inst.idinstructor LEFT JOIN categoria as cat ON sesion.idcategoria = cat.idcategoria WHERE usr.idusuario = %s AND fecha < CURRENT_DATE ORDER BY fecha asc, hora DESC",(usrID,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
-            print("No tiene sesiones programadas")
+            print("No tiene sesiones pasadas")
             verSesiones(usrID)
             return
         for i in range (0,len(sesiones)):
@@ -261,7 +261,7 @@ def verSesiones(usrID):
 
 """
 def estadisticas(usrID):
-    
+
     print("Estadisticas de todos los tiempos: ")
     cur.execute("SELECT max(pesoactual), min(pesoactual), avg(pesoactual) FROM registro WHERE idusuario = %s", (usrID,))
     maxPeso, minPeso, avgPeso = cur.fetchone()
@@ -287,7 +287,7 @@ def estadisticas(usrID):
     print("\nCalorias:\nCalorías máximas: ", maxCal)
     print("Calorías mínimas: ", minCal)
     print("Calorías promedio: ", round(avgCal, 2))
-    
+
 
 
 """Funcion para agregar sesiones a su calendario
@@ -305,7 +305,7 @@ def agregarSesion(usrID):
             fecha = datetime.strptime(fecha, '%Y-%m-%d').date()
         except ValueError:
             print("No ha ingresado una fecha valida")
-            nuevaSesion()
+            agregarSesion(usrID)
             return
         if fecha < date.today():
             print("La fecha ingresada es anterior a la fecha actual")
@@ -313,9 +313,9 @@ def agregarSesion(usrID):
             return
         cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE fecha = %s ORDER BY hora asc", (fecha,))
         sesiones = cur.fetchall()
-        
+
         if (len(sesiones) == 0):
-            print("No hay sesiones con en esa fecha")
+            print("No hay sesiones para esa fecha")
             agregarSesion(usrID)
             return
         print("Sesiones: ")
@@ -328,7 +328,7 @@ def agregarSesion(usrID):
                 print("No ha ingresado una sesion valida")
                 agregarSesion(usrID)
                 return
-        else: 
+        else:
             print("No ha ingresado un numero valido")
             agregarSesion(usrID)
             return
@@ -343,14 +343,14 @@ def agregarSesion(usrID):
         conn.commit()
         MenuCliente(usrID)
         return
-        
+
     if op == "2":
         hora = input("Ingrese la hora de la sesion (ingrese solo la hora exacta e.g. ""19"" o ""7""): ")
         hora = hora+":00:00"
-        cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE hora = %s ORDER BY hora asc", (hora,))
+        cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE hora = %s AND fecha >= CURRENT_DATE ORDER BY fecha, hora asc", (hora,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
-            print("No hay sesiones con en esa hora")
+            print("No hay sesiones para esa hora")
             agregarSesion(usrID)
             return
         print("Sesiones: ")
@@ -363,7 +363,7 @@ def agregarSesion(usrID):
                 print("No ha ingresado una sesion valida")
                 agregarSesion(usrID)
                 return
-        else: 
+        else:
             print("No ha ingresado un numero valido")
             agregarSesion(usrID)
             return
@@ -385,7 +385,7 @@ def agregarSesion(usrID):
             duracion = 30
         elif duracion == "2":
             duracion = 60
-        cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE duracion = %s ORDER BY fecha asc, hora asc", (duracion,))
+        cur.execute("SELECT idsesion, inst.nombre as nombre, inst.apellido as apellido, cat.nombre as categoria, fecha, hora, duracion FROM sesion LEFT JOIN categoria as cat on sesion.idcategoria = cat.idcategoria LEFT JOIN instructor as inst on sesion.idinstructor = inst.idinstructor WHERE duracion = %s AND fecha >= CURRENT_DATE ORDER BY fecha asc, hora asc", (duracion,))
         sesiones = cur.fetchall()
         if (len(sesiones) == 0):
             print("No hay sesiones con en esa hora")
@@ -401,7 +401,7 @@ def agregarSesion(usrID):
                 print("No ha ingresado una sesion valida")
                 agregarSesion(usrID)
                 return
-        else: 
+        else:
             print("No ha ingresado un numero valido")
             agregarSesion(usrID)
             return
@@ -450,7 +450,7 @@ def agregarSesion(usrID):
                 print("No ha ingresado una sesion valida")
                 agregarSesion(usrID)
                 return
-        else: 
+        else:
             print("No ha ingresado un numero valido")
             agregarSesion(usrID)
             return
@@ -500,7 +500,7 @@ def agregarSesion(usrID):
                 print("No ha ingresado una sesion valida")
                 agregarSesion(usrID)
                 return
-        else: 
+        else:
             print("No ha ingresado un numero valido")
             agregarSesion(usrID)
             return
@@ -534,7 +534,7 @@ def ingresoDatosCliente(usrID):
     nacDia = input("Dia de nacimiento: ")
     estatura = input("Estatura (en CM, sin decimales): ")
     direccion = input("Direccion: ")
-    
+
     #concatenar fecha de nacimiento
     fechaNac = nacAnio + "-" + nacMes + "-" + nacDia
 
@@ -545,7 +545,7 @@ def ingresoDatosCliente(usrID):
     print("\nPerfil actualizado con exito")
     MenuCliente(usrID)
     return
-    
+
 
 """Cuando es el primer log in del usuario, se le pide que contrate un plan
 
@@ -555,7 +555,7 @@ def ingresoDatosCliente(usrID):
 """
 def activarCuenta(usrID):
     print("Contratar un plan")
-    
+
     print("¿Que plan desea contratar?\n1. Plan Oro Q250.00 (al mes): Acceso a nuestro servicio, incluye prestamo de un smartwatch, sesiones 24/7.\n2. Plan Diamante Q500.00 (al mes): Incluye todo lo del plan Oro y adicional 1 consulta con un nutricionista al mes!\nIncluye además el Smartwatch de regalo luego de un contrato mínimo de 12 meses.\n3. No deseo contratar un plan")
 
     op = input()
@@ -644,7 +644,7 @@ def activarCuenta(usrID):
         print("No ha marcado una opcion valida")
         activarCuenta(usrID)
         return
-    
+
 
 
 
@@ -788,7 +788,7 @@ def modificarInstructor():
         MenuAdmin()
         return
     elif op == "3":
-        print("¿Desea activar o desactivar al instructor? Recuerde que la fecha final del instructor se actualizara automaticamente (si se activa será nula si se desactiva sera la de hoy), si se activa un instructor su fecha de inicio se cambiara automaticamente a la fecha de hoy") 
+        print("¿Desea activar o desactivar al instructor? Recuerde que la fecha final del instructor se actualizara automaticamente (si se activa será nula si se desactiva sera la de hoy), si se activa un instructor su fecha de inicio se cambiara automaticamente a la fecha de hoy")
         print("1. Activar\n2. Desactivar")
         op2 = input()
         if op2 == "1":
@@ -822,7 +822,7 @@ def modificarInstructor():
         print("No ha marcado una opcion valida")
         modificarInstructor()
         return
-    
+
 def nuevaSesion():
     print("Desea agregar una nueva sesion?\n1. Si\n2. No, regresar a menu de administradores")
     op = input()
@@ -897,8 +897,8 @@ def nuevaSesion():
             nuevaSesion()
             return
     hora = str(hora)+":00:00"
-    
-    
+
+
     #Obtener duracion
     duracion = input("Duracion de la sesion. \n1. Sesion de 30 minutos\n2. Sesion de 60 minutos\n")
     if duracion == "1":
@@ -909,7 +909,7 @@ def nuevaSesion():
         print("No ha ingresado una opcion valida")
         nuevaSesion()
         return
-    
+
     #Insertar sesion
     cur.execute("INSERT INTO sesion (idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES (%s, %s, %s, %s, %s, %s)", (id, instructor, selecCategoria, fecha, hora, duracion))
     conn.commit()
@@ -952,7 +952,7 @@ def modificarSesion():
                 print("No ha ingresado una ID valido")
                 modificarSesion()
                 return
-        
+
         instNum = instructor-1
         if instructores[instNum][3] == 0:
             print("El instructor no esta activo")
@@ -1115,7 +1115,7 @@ def modificarUsuario():
     cur.execute("SELECT * FROM usuario WHERE idusuario = %s", (usuario,))
     usu1 = cur.fetchone()
     print("Que desea modificar?")
-    print("1. Username")    
+    print("1. Username")
     print("2. Email")
     print("3. Nombre")
     print("4. Apellido")
@@ -1220,8 +1220,8 @@ def modificarUsuario():
     elif op == 8:
         MenuAdmin()
         return
-    
-    
+
+
 
 def bajaUsuario():
     cur.execute("SELECT * FROM usuario")
@@ -1310,8 +1310,8 @@ def reportes():
         MenuAdmin()
         return
 
-    
-    
+
+
 
 
 
