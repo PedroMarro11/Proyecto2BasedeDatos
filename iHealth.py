@@ -181,7 +181,7 @@ def MenuCliente(usrID):
         ingresoDatosCliente(usrID)
         return
 
-    print("¿Que desea hacer?\n1. Registro diario\n2. Ver estadísticas de peso y calorias\n3. Ver y agregar sesiones\n4. Ver sesiones programadas e historicas\n5. Cerrar sesion\n6. Cerrar programa")
+    print("¿Que desea hacer?\n1. Registro diario\n2. Ver estadísticas de peso y calorias\n3. Ver y agregar sesiones\n4. Ver sesiones programadas e historicas\n5. Cancelar suscripcion\n6. Cerrar sesion\n7. Cerrar programa")
     op1 = input()
     if op1 == "1":
         cur.execute("SELECT fecha FROM registro WHERE idusuario = %s AND fecha = CURRENT_DATE", (usrID,))
@@ -205,13 +205,34 @@ def MenuCliente(usrID):
         verSesiones(usrID)
         return
     if op1 == "5":
-        main()
+        cancelarSuscripcion(usrID)
         return
     if op1 == "6":
+        main()
+        return
+    if op1 == "7":
         exit()
     else:
         print("No ha marcado una opcion valida")
         MenuCliente(usrID)
+        return
+
+
+def cancelarSuscripcion(usrID):
+    print("¿Esta seguro que desea cancelar su suscripcion?\n1. Si\n2. No")
+    opc = input()
+    if opc == "1":
+        cur.execute("UPDATE Usuario SET activo = '0' WHERE idusuario = %s", (usrID,))
+        conn.commit()
+        print("Su suscripcion ha sido cancelada")
+        main()
+        return
+    elif opc == "2":
+        MenuCliente(usrID)
+        return
+    else:
+        print("No ha marcado una opcion valida")
+        cancelarSuscripcion(usrID)
         return
 
 """Menu para ver las sesiones del usuario
