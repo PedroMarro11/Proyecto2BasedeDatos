@@ -488,7 +488,7 @@ def agregarSesion(usrID):
             print("No ha ingresado un instructor valido")
             agregarSesion(usrID)
             return
-       
+
         inst = instructores[instructor][0]
         print(inst)
         cur.execute("SELECT idinstructor, activo FROM instructor WHERE idinstructor = %s", (inst,))
@@ -662,7 +662,7 @@ def registroDiario():
     print("Registro diario")
     calorias = int(input("Calorias estimadas (ingrese un número entero): "))
     peso = int(input("Peso en LBS (ingrese un número entero): "))
-    
+
     return peso, calorias
 
 
@@ -1321,7 +1321,11 @@ def reportes():
             reportes()
             return
         cur.execute("SELECT hora, count(DISTINCT sesion.idsesion) as countsesion, count(usuariosesion.idusuario) as countusuarios FROM sesion NATURAL JOIN usuariosesion WHERE fecha = %s  GROUP BY hora  ORDER BY countusuarios DESC LIMIT 1", (fecha,))
-        hora = cur.fetchall()
+        hora = cur.fetchone()
+        if (hora == None):
+            print("No hay sesiones registradas este dia.")
+            MenuAdmin()
+            return
         print("La hora pico en la fecha ingresada es:", hora[0][0], "con", hora[0][1], "sesiones y", hora[0][2], "usuarios")
         MenuAdmin()
         return
@@ -1347,7 +1351,7 @@ def crearAdmin():
         crearAdmin()
         return
     direccion = input("Direccion: ")
-    cur.execute("INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio) VALUES (%s, %s, %s, %s, '1', %s, %s, %s, %s, '1', CURRENT_DATE)", 
+    cur.execute("INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio) VALUES (%s, %s, %s, %s, '1', %s, %s, %s, %s, '1', CURRENT_DATE)",
     (newID, username, password, email, nombre, apellido, fechanac, direccion))
     conn.commit()
     print("Administrador creado con exito")
