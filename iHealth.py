@@ -474,7 +474,7 @@ def agregarSesion(usrID):
         print("¿Con que instructor desea trabajar?")
         cur.execute("SELECT * FROM instructor ORDER BY idinstructor asc")
         instructores = cur.fetchall()
-        for i in range (0,len(instructores)-1):
+        for i in range (0,len(instructores)):
             print(i+1, ".",  instructores[i][1], instructores[i][2])
         instructor = input("Ingrese el numero del instructor con el que quiere trabajar: ")
         if instructor.isnumeric():
@@ -489,10 +489,8 @@ def agregarSesion(usrID):
             return
 
         inst = instructores[instructor][0]
-        print(inst)
         cur.execute("SELECT idinstructor, activo FROM instructor WHERE idinstructor = %s", (inst,))
         instCheck = cur.fetchone()
-        print(instCheck)
         if instCheck[1] == '0':
             print("Lo sentimos este instructor no esta disponible")
             agregarSesion(usrID)
@@ -1299,7 +1297,30 @@ def reportes():
         MenuAdmin()
         return
     elif op == 2:
-        cur.execute("SELECT categoria.nombre, count(DISTINCT sesion.idsesion) as cuenta_sesion, count(usuariosesion.idusuario) AS cuenta_usuarios FROM sesion NATURAL JOIN usuariosesion NATURAL JOIN categoria GROUP BY categoria.nombre ORDER BY cuenta_sesion desc")
+        fecha1 = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+        fecha2 = input("Ingrese la fecha final (YYYY-MM-DD): ")
+        hoy = date.today()
+        try:
+            fecha1valid = datetime.strptime(fecha1, '%Y-%m-%d').date()
+            fecha2valid = datetime.strptime(fecha2, '%Y-%m-%d').date()
+        except ValueError:
+            print("No ha ingresado fechas validas")
+            reportes()
+            return
+        if (fecha1valid >= hoy):
+            print("No ha ingresado un intervalo valido.")
+            reportes()
+            return
+        if (fecha2valid > hoy):
+            print("No ha ingresado un intervalo valido.")
+            reportes()
+            return
+        if(fecha1valid >= fecha2valid):
+            print("No ha ingresado un intervalo valido.")
+            reportes()
+            return
+
+        cur.execute("SELECT categoria.nombre, count(DISTINCT sesion.idsesion) as cuenta_sesion, count(usuariosesion.idusuario) AS cuenta_usuarios FROM sesion NATURAL JOIN usuariosesion NATURAL JOIN categoria WHERE sesion.fecha >= %s AND sesion.fecha <= %s GROUP BY categoria.nombre ORDER BY cuenta_sesion desc", (fecha1, fecha2))
         categorias = cur.fetchall()
         print("Sesiones y usuarios por categoria:")
         for i in range (0,len(categorias)):
