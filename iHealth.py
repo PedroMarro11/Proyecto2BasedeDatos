@@ -491,7 +491,7 @@ def agregarSesion(usrID):
         inst = instructores[instructor][0]
         cur.execute("SELECT idinstructor, activo FROM instructor WHERE idinstructor = %s", (inst,))
         instCheck = cur.fetchone()
-        if instCheck[1] == '0':
+        if instCheck[1] == False:
             print("Lo sentimos este instructor no esta disponible")
             agregarSesion(usrID)
             return
@@ -889,7 +889,6 @@ def nuevaSesion():
         print("No ha ingresado una categoria valida")
         nuevaSesion()
         return
-    print("categoria: ", categoria)
     selecCategoria = categorias[categoria][0]
     #Obtener fecha
     fecha = input("Ingrese la fecha de la sesion (YYYY-MM-DD): ")
