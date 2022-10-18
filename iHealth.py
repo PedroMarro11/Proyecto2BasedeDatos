@@ -1354,7 +1354,7 @@ def reportes():
             print("No hay sesiones registradas este dia.")
             MenuAdmin()
             return
-        print("La hora pico en la fecha ingresada es:", hora[0][0], "con", hora[0][1], "sesiones y", hora[0][2], "usuarios")
+        print("La hora pico en la fecha ingresada es:", hora[0], "con", hora[1], "sesiones y", hora[2], "usuarios")
         MenuAdmin()
         return
     elif op == 6:
