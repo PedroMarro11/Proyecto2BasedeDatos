@@ -70,7 +70,6 @@ def SignIn():
 
         if cur.rowcount == 1:
             usrID = cur.fetchone()[0]
-            print("Usuario ", usrID)
             print("Bienvenido " + usr)
             #Se obtiene la clasificacion del usuario
             cur.execute("SELECT clasificacion FROM Usuario WHERE idusuario = %s", (int(usrID),))
@@ -937,9 +936,14 @@ def nuevaSesion():
     return
 
 def modificarSesion():
-    print("Seleccione la sesion que desea modificar: ")
+
     cur.execute("SELECT * FROM sesion WHERE fecha >= CURRENT_DATE ORDER BY idsesion ASC")
     sesiones = cur.fetchall()
+    if (len(sesiones)== 0):
+        print("No existen sesiones proximas.")
+        MenuAdmin()
+        return
+    print("Seleccione la sesion que desea modificar: ")
     sesIDs = []
     for i in range (0,len(sesiones)):
         sesIDs.append(sesiones[i][0])
@@ -1089,6 +1093,10 @@ def eliminarSesion():
     print("Eliminar sesion")
     cur.execute("SELECT * FROM sesion WHERE fecha >= CURRENT_DATE ORDER BY idsesion ASC")
     sesiones = cur.fetchall()
+    if (len(sesiones)== 0):
+        print("No existen sesiones proximas.")
+        MenuAdmin()
+        return
     sesIDs = []
     for i in range (0,len(sesiones)):
         sesIDs.append(sesiones[i][0])
