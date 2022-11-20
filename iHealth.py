@@ -803,15 +803,17 @@ MENU ADMINSESIONES
 def menuAdminSesiones():    
     print("ADMINISTRADOR DE SESIONES")
     print("¿Que desea hacer?")
-    print("1. Agregar sesion\n2. Modificar sesion o dar de baja sesion\n3. Cerrar Sesion\n4. Salir")
+    print("1. Agregar sesion\n2. Modificar sesion \n3. Dar de baja sesion\n4. Cerrar Sesion\n5. Salir")
     op = input()
     if op == "1":
         agregarSesion()
     elif op == "2":
         modificarSesion()
     elif op == "3":
-        main()
+        eliminarSesion()
     elif op == "4":
+        main()
+    elif op == "5":
         print("Saliendo...")
         exit()
 
@@ -968,7 +970,7 @@ def nuevaSesion():
     if op == "1":
         print("Ingrese los datos de la nueva sesion: ")
     elif op == "2":
-        MenuAdmin()
+        menuAdminSesiones()
         return
     else:
         print("No ha marcado una opcion valida")
@@ -1052,7 +1054,7 @@ def nuevaSesion():
     cur.execute("INSERT INTO sesion (idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES (%s, %s, %s, %s, %s, %s)", (id, instructor, selecCategoria, fecha, hora, duracion))
     conn.commit()
     print("Sesion agregada con exito")
-    MenuAdmin()
+    menuAdminSesiones()
     return
 
 
@@ -1068,7 +1070,7 @@ def modificarSesion():
     sesiones = cur.fetchall()
     if (len(sesiones)== 0):
         print("No existen sesiones proximas.")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     print("Seleccione la sesion que desea modificar: ")
     sesIDs = []
@@ -1115,7 +1117,7 @@ def modificarSesion():
         cur.execute("UPDATE sesion SET idinstructor = %s WHERE idsesion = %s", (instructor, sesion))
         conn.commit()
         print("Instructor modificado con exito")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     elif op == "2":
         print("Seleccione categoria de la sesion")
@@ -1142,7 +1144,7 @@ def modificarSesion():
         cur.execute("UPDATE sesion SET idcategoria = %s WHERE idsesion = %s", (selecCategoria, sesion))
         conn.commit()
         print("Categoria modificada con exito")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     elif op == "3":
         fecha = input("Ingrese la fecha de la sesion (YYYY-MM-DD): ")
@@ -1163,7 +1165,7 @@ def modificarSesion():
         cur.execute("UPDATE sesion SET fecha = %s WHERE idsesion = %s", (fecha, sesion))
         conn.commit()
         print("Fecha modificada con exito")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     elif op == "4":
         hora = input("Ingrese la hora de la sesion (HH): ")
@@ -1185,7 +1187,7 @@ def modificarSesion():
         cur.execute("UPDATE sesion SET hora = %s WHERE idsesion = %s", (hora, sesion))
         conn.commit()
         print("Hora modificada con exito")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     elif op == "5":
         duracion = input("Nueva duracion.\n1. 30 minutos\n2. 60 minutos ")
@@ -1210,10 +1212,10 @@ def modificarSesion():
         cur.execute("UPDATE sesion SET duracion = %s WHERE idsesion = %s", (duracion, sesion))
         conn.commit()
         print("Duracion modificada con exito")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     elif op == "6":
-        MenuAdmin()
+        menuAdminSesiones()
         return
 
 
@@ -1228,7 +1230,7 @@ def eliminarSesion():
     sesiones = cur.fetchall()
     if (len(sesiones)== 0):
         print("No existen sesiones proximas.")
-        MenuAdmin()
+        menuAdminSesiones()
         return
     sesIDs = []
     for i in range (0,len(sesiones)):
@@ -1249,7 +1251,7 @@ def eliminarSesion():
     cur.execute("DELETE FROM sesion WHERE idsesion = %s", (sesion,))
     conn.commit()
     print("Sesion eliminada con exito")
-    MenuAdmin()
+    menuAdminSesiones()
     return
 
 
@@ -1261,7 +1263,7 @@ Modificar a un administrador
 """
 def modificarAdministrador():
     print("Modificar administrador")
-    cur.execute("SELECT * FROM usuario WHERE clasficacion = '1' ORDER BY idusuario ASC")
+    cur.execute("SELECT * FROM usuario WHERE clasificacion = '1' ORDER BY idusuario ASC")
     usuarios = cur.fetchall()
     usuIDs = []
     for i in range (0,len(usuarios)):
@@ -1310,7 +1312,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET username = %s WHERE idusuario = %s", (nombre, usuario))
         conn.commit()
         print("Nombre modificado con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 2:
         email = input("Ingrese el nuevo email: ")
@@ -1321,7 +1323,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET email = %s WHERE idusuario = %s", (email, usuario))
         conn.commit()
         print("Email modificado con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 3:
         nombre = input("Ingrese el nuevo nombre: ")
@@ -1332,7 +1334,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET nombre = %s WHERE idusuario = %s", (nombre, usuario))
         conn.commit()
         print("Nombre modificado con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 4:
         apellido = input("Ingrese el nuevo apellido: ")
@@ -1343,7 +1345,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET apellido = %s WHERE idusuario = %s", (apellido, usuario))
         conn.commit()
         print("Apellido modificado con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 5:
         fecha = input("Ingrese la nueva fecha de nacimiento (YYYY-MM-DD): ")
@@ -1360,7 +1362,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET fecha_nacimiento = %s WHERE idusuario = %s", (fecha, usuario))
         conn.commit()
         print("Fecha de nacimiento modificada con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 6:
         direccion = input("Ingrese la nueva direccion: ")
@@ -1371,7 +1373,7 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET direccion = %s WHERE idusuario = %s", (direccion, usuario))
         conn.commit()
         print("Direccion modificada con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 7:
         altura = input("Ingrese la nueva altura: ")
@@ -1382,10 +1384,10 @@ def modificarAdministrador():
         cur.execute("UPDATE usuario SET altura = %s WHERE idusuario = %s", (altura, usuario))
         conn.commit()
         print("Altura modificada con exito")
-        MenuAdmin()
+        menuAdminAdmin()
         return
     elif op == 8:
-        MenuAdmin()
+        menuAdminAdmin()
         return
 
 """
@@ -1395,7 +1397,7 @@ Modificar a un usuario
 """
 def modificarUsuario():
     print("Modificar usuario")
-    cur.execute("SELECT * FROM usuario WHERE clasficacion = '0' ORDER BY idusuario ASC")
+    cur.execute("SELECT * FROM usuario WHERE clasificacion = '0' ORDER BY idusuario ASC")
     usuarios = cur.fetchall()
     usuIDs = []
     for i in range (0,len(usuarios)):
@@ -1444,7 +1446,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET username = %s WHERE idusuario = %s", (nombre, usuario))
         conn.commit()
         print("Nombre modificado con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 2:
         email = input("Ingrese el nuevo email: ")
@@ -1455,7 +1457,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET email = %s WHERE idusuario = %s", (email, usuario))
         conn.commit()
         print("Email modificado con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 3:
         nombre = input("Ingrese el nuevo nombre: ")
@@ -1466,7 +1468,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET nombre = %s WHERE idusuario = %s", (nombre, usuario))
         conn.commit()
         print("Nombre modificado con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 4:
         apellido = input("Ingrese el nuevo apellido: ")
@@ -1477,7 +1479,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET apellido = %s WHERE idusuario = %s", (apellido, usuario))
         conn.commit()
         print("Apellido modificado con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 5:
         fecha = input("Ingrese la nueva fecha de nacimiento (YYYY-MM-DD): ")
@@ -1494,7 +1496,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET fecha_nacimiento = %s WHERE idusuario = %s", (fecha, usuario))
         conn.commit()
         print("Fecha de nacimiento modificada con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 6:
         direccion = input("Ingrese la nueva direccion: ")
@@ -1505,7 +1507,7 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET direccion = %s WHERE idusuario = %s", (direccion, usuario))
         conn.commit()
         print("Direccion modificada con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 7:
         altura = input("Ingrese la nueva altura: ")
@@ -1516,10 +1518,10 @@ def modificarUsuario():
         cur.execute("UPDATE usuario SET altura = %s WHERE idusuario = %s", (altura, usuario))
         conn.commit()
         print("Altura modificada con exito")
-        MenuAdmin()
+        menuAdminUsuario()
         return
     elif op == 8:
-        MenuAdmin()
+        menuAdminUsuario()
         return
 
 
@@ -1552,8 +1554,8 @@ def bajaAdmin():
         return
     cur.execute("UPDATE usuario SET activo = 0 WHERE idusuario = %s", (usuario,))
     conn.commit()
-    print("Usuario desactivado con exito")
-    MenuAdmin()
+    print("Administrador desactivado con exito")
+    MenuAdminAdmin()
     return
 
 """
@@ -1586,7 +1588,7 @@ def bajaUsuario():
     cur.execute("UPDATE usuario SET activo = 0 WHERE idusuario = %s", (usuario,))
     conn.commit()
     print("Usuario desactivado con exito")
-    MenuAdmin()
+    menuAdminUsuario()
     return
 
 
@@ -1616,7 +1618,7 @@ def reportes():
         print("Las 10 sesiones que mas usuarios tuvieron son:")
         for i in range (0,len(sesiones)):
             print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
-        MenuAdmin()
+        menuAdminReportes()
         return
     elif op == 2:
         fecha1 = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
@@ -1647,7 +1649,7 @@ def reportes():
         print("Sesiones y usuarios por categoria:")
         for i in range (0,len(categorias)):
             print("Categoria:", categorias[i][0], ",Cantidad de sesiones:", categorias[i][1], ",Cantidad de usuarios:", categorias[i][2])
-        MenuAdmin()
+        menuAdminReportes()
         return
     elif op == 3:
         cur.execute("SELECT instructor.idinstructor, instructor.nombre, instructor.apellido, count(usuariosesion.idusuario) AS cuenta_usuarios FROM sesion NATURAL JOIN usuariosesion NATURAL JOIN instructor GROUP BY instructor.idinstructor, instructor.nombre, instructor.apellido ORDER BY cuenta_usuarios desc LIMIT 5")
@@ -1655,13 +1657,13 @@ def reportes():
         print("Top 5 instructores:")
         for i in range (0,len(instructores)):
             print("ID instructor:", instructores[i][0], ",Nombre: ", instructores[i][1], instructores[i][2], ",Cantidad de usuarios que han ido a sus sesiones:", instructores[i][3])
-        MenuAdmin()
+        menuAdminReportes()
         return
     elif op == 4:
         cur.execute("SELECT count(*) FROM usuario WHERE suscripcion = 2 AND fechainicio >= (now() - interval '6 months')")
         cuentas = cur.fetchall()
         print("Cantidad de cuentas diamante creadas en los ultimos 6 meses:", cuentas[0][0])
-        MenuAdmin()
+        menuAdminReportes()
         return
     elif op == 5:
         fecha = input("Ingrese la fecha en formato YYYY-MM-DD: ")
@@ -1675,13 +1677,13 @@ def reportes():
         hora = cur.fetchone()
         if (hora == None):
             print("No hay sesiones registradas este dia.")
-            MenuAdmin()
+            menuAdminReportes()
             return
         print("La hora pico en la fecha ingresada es:", hora[0], "con", hora[1], "sesiones y", hora[2], "usuarios")
-        MenuAdmin()
+        menuAdminReportes()
         return
     elif op == 6:
-        MenuAdmin()
+        menuAdminReportes()
         return
 
 
@@ -1722,7 +1724,7 @@ def crearAdmin():
     (newID, username, password, email, nombre, apellido, fechanac, direccion, idcategoria))
     conn.commit()
     print("Administrador creado con exito")
-    MenuAdmin()
+    menuAdminAdmin()
     return
 
 
