@@ -735,15 +735,17 @@ ADMIN ADMIN
 def menuAdminAdmin():
     print("ADMINISTRADOR DE ADMINISTRADORES")
     print("¿Que desea hacer?")
-    print("1. Agregar administrador\n2. Modificar administrador o dar de baja administrador\n3. Cerrar Sesion\n4. Salir")
+    print("1. Agregar administrador\n2. Modificar administrador \n3. Dar de baja administrador\n4. Cerrar Sesion\n5. Salir")
     op = input()
     if op == "1":
         crearAdmin()
     elif op == "2":
-        modificarAdmin()
+        modificarAdministrador()
     elif op == "3":
-        main()
+        bajaAdmin()
     elif op == "4":
+        main()
+    elif op == "5":
         print("Saliendo...")
         exit()
 
@@ -791,6 +793,13 @@ def menuAdminInstructores():
         print("Saliendo...")
         exit()
 
+"""
+MENU ADMINSESIONES
+
+:return: None
+
+
+"""
 def menuAdminSesiones():    
     print("ADMINISTRADOR DE SESIONES")
     print("¿Que desea hacer?")
@@ -806,20 +815,19 @@ def menuAdminSesiones():
         print("Saliendo...")
         exit()
 
+"""
+MENU ADMIN REPORTES
+"""
 def menuAdminReportes():
     print("ADMINISTRADOR DE REPORTES")
     print("¿Que desea hacer?")
-    print("1. Reporte de usuarios\n2. Reporte de instructores\n3. Reporte de sesiones\n4. Cerrar Sesion\n5. Salir")
+    print("1. Ver posibles reportes\n2. Cerrar Sesion\n3. Salir")
     op = input()
     if op == "1":
-        reporteUsuarios()
+        reportes()
     elif op == "2":
-        reporteInstructores()
-    elif op == "3":
-        reporteSesiones()
-    elif op == "4":
         main()
-    elif op == "5":
+    elif op == "3":
         print("Saliendo...")
         exit()
 
@@ -1246,13 +1254,148 @@ def eliminarSesion():
 
 
 """
+Modificar a un administrador
+
+:returns: None
+
+"""
+def modificarAdministrador():
+    print("Modificar administrador")
+    cur.execute("SELECT * FROM usuario WHERE clasficacion = '1' ORDER BY idusuario ASC")
+    usuarios = cur.fetchall()
+    usuIDs = []
+    for i in range (0,len(usuarios)):
+        usuIDs.append(usuarios[i][0])
+    for i in range (0,len(usuarios)):
+        print("ID:",usuarios[i][0], ",Username:", usuarios[i][1], ",Email:", usuarios[i][3], ",Nombre:", usuarios[i][5], ",Apellido:", usuarios[i][6], ",Fecha Nacimiento:", usuarios[i][7], ",Direccion:", usuarios[i][8], ",Altura:", usuarios[i][9])
+    usuario = input("Ingrese el ID del administrador que desea modificar: ")
+    if usuario.isnumeric():
+        usuario = int(usuario)
+        if usuario not in usuIDs:
+            print("No ha ingresado un ID valido")
+            modificarUsuario()
+            return
+    else:
+        print("No ha ingresado un ID valido")
+        modificarUsuario()
+        return
+    cur.execute("SELECT * FROM usuario WHERE idusuario = %s", (usuario,))
+    usu1 = cur.fetchone()
+    print("Que desea modificar?")
+    print("1. Username")
+    print("2. Email")
+    print("3. Nombre")
+    print("4. Apellido")
+    print("5. Fecha de nacimiento")
+    print("6. Direccion")
+    print("7. Altura")
+    print("8. Volver")
+    op = input("Ingrese el numero de la opcion: ")
+    if op.isnumeric():
+        op = int(op)
+        if op < 1 or op > 8:
+            print("No ha ingresado una opcion valida")
+            modificarUsuario()
+            return
+    else:
+        print("No ha ingresado una opcion valida")
+        modificarUsuario()
+        return
+    if op == 1:
+        user = input("Ingrese el nuevo usuario: ")
+        if usu1[1] == user:
+            print("El nombre ingresado es el mismo que el actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET username = %s WHERE idusuario = %s", (nombre, usuario))
+        conn.commit()
+        print("Nombre modificado con exito")
+        MenuAdmin()
+        return
+    elif op == 2:
+        email = input("Ingrese el nuevo email: ")
+        if usu1[3] == email:
+            print("El email ingresado es el mismo que el actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET email = %s WHERE idusuario = %s", (email, usuario))
+        conn.commit()
+        print("Email modificado con exito")
+        MenuAdmin()
+        return
+    elif op == 3:
+        nombre = input("Ingrese el nuevo nombre: ")
+        if usu1[5] == nombre:
+            print("El nombre ingresado es el mismo que el actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET nombre = %s WHERE idusuario = %s", (nombre, usuario))
+        conn.commit()
+        print("Nombre modificado con exito")
+        MenuAdmin()
+        return
+    elif op == 4:
+        apellido = input("Ingrese el nuevo apellido: ")
+        if usu1[6] == apellido:
+            print("El apellido ingresado es el mismo que el actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET apellido = %s WHERE idusuario = %s", (apellido, usuario))
+        conn.commit()
+        print("Apellido modificado con exito")
+        MenuAdmin()
+        return
+    elif op == 5:
+        fecha = input("Ingrese la nueva fecha de nacimiento (YYYY-MM-DD): ")
+        try:
+            datetime.strptime(fecha, '%Y-%m-%d')
+        except ValueError:
+            print("No ha ingresado una fecha valida")
+            modificarUsuario()
+            return
+        if usu1[7] == fecha:
+            print("La fecha ingresada es la misma que la actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET fecha_nacimiento = %s WHERE idusuario = %s", (fecha, usuario))
+        conn.commit()
+        print("Fecha de nacimiento modificada con exito")
+        MenuAdmin()
+        return
+    elif op == 6:
+        direccion = input("Ingrese la nueva direccion: ")
+        if usu1[8] == direccion:
+            print("La direccion ingresada es la misma que la actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET direccion = %s WHERE idusuario = %s", (direccion, usuario))
+        conn.commit()
+        print("Direccion modificada con exito")
+        MenuAdmin()
+        return
+    elif op == 7:
+        altura = input("Ingrese la nueva altura: ")
+        if usu1[9] == altura:
+            print("La altura ingresada es la misma que la actual")
+            modificarUsuario()
+            return
+        cur.execute("UPDATE usuario SET altura = %s WHERE idusuario = %s", (altura, usuario))
+        conn.commit()
+        print("Altura modificada con exito")
+        MenuAdmin()
+        return
+    elif op == 8:
+        MenuAdmin()
+        return
+
+"""
 Modificar a un usuario
 
 :returns: None
 """
 def modificarUsuario():
     print("Modificar usuario")
-    cur.execute("SELECT * FROM usuario ORDER BY idusuario ASC")
+    cur.execute("SELECT * FROM usuario WHERE clasficacion = '0' ORDER BY idusuario ASC")
     usuarios = cur.fetchall()
     usuIDs = []
     for i in range (0,len(usuarios)):
@@ -1380,6 +1523,39 @@ def modificarUsuario():
         return
 
 
+
+"""
+Dar de baja a un administrador
+
+
+
+"""
+def bajaAdmin():
+    cur.execute("SELECT * FROM usuario WHERE clasificacion = '1'")
+    usuarios = cur.fetchall()
+    usuIDs = []
+    for i in range (0,len(usuarios)):
+        usuIDs.append(usuarios[i][0])
+    print("Usuarios:")
+    for i in range (0,len(usuarios)):
+        print("ID:",usuarios[i][0], ",Username:", usuarios[i][1], ",Email:", usuarios[i][3], ",Nombre:", usuarios[i][5], ",Apellido:", usuarios[i][6], ",Fecha Nacimiento:", usuarios[i][7], ",Direccion:", usuarios[i][8], ",Altura:", usuarios[i][9])
+    usuario = input("Ingrese el ID del administrador que desea desactivar: ")
+    if usuario.isnumeric():
+        usuario = int(usuario)
+        if usuario not in usuIDs:
+            print("No ha ingresado un ID valido")
+            bajaUsuario()
+            return
+    else:
+        print("No ha ingresado un ID valido")
+        bajaUsuario()
+        return
+    cur.execute("UPDATE usuario SET activo = 0 WHERE idusuario = %s", (usuario,))
+    conn.commit()
+    print("Usuario desactivado con exito")
+    MenuAdmin()
+    return
+
 """
 Dar de baja un usuario
 
@@ -1388,7 +1564,7 @@ Dar de baja un usuario
 
 """
 def bajaUsuario():
-    cur.execute("SELECT * FROM usuario")
+    cur.execute("SELECT * FROM usuario WHERE clasificacion = '0'")
     usuarios = cur.fetchall()
     usuIDs = []
     for i in range (0,len(usuarios)):
