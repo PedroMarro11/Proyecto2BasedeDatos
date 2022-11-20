@@ -21,20 +21,19 @@ BEGIN
     usernombre = new.username;
     userpass = new.userpassword;
     
-    
-    IF new.clasificacion = '1' THEN
+    IF TG_OP = 'INSERT' THEN 
+        IF new.clasificacion = '1' THEN
         SELECT rolname INTO existencia FROM PG_ROLES WHERE rolname = usernombre;
-        
-        IF usernombre IS NOT NULL THEN
         
             IF new.adminClasif = 1 THEN
 
-                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminadmin';
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminadmin SUPERUSER';
             END IF;
             IF new.adminClasif = 2 THEN
                 execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminusuarios';
             END IF;
             IF new.adminClasif = 3 THEN
+              
                 execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP admininstructores';
             END IF;
             IF new.adminClasif = 4 THEN
@@ -53,7 +52,7 @@ $$ LANGUAGE PLPGSQL;
 
 
 CREATE OR REPLACE TRIGGER nuevoAdmin
-AFTER INSERT OR UPDATE 
+AFTER INSERT 
 ON usuario
     FOR EACH ROW EXECUTE FUNCTION nuevoAdmin();
     
@@ -62,6 +61,7 @@ SELECT * FROM usuario
 INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio, adminclasif) 
 VALUES (9, 'adminprueba', 'hola', 'prueba', '1','prueba','prueba',CURRENT_DATE,'prueba','1',CURRENT_DATE,1)
 
+select current_user;
 
 
     

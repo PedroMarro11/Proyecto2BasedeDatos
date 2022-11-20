@@ -81,10 +81,12 @@ def SignIn():
 
             #Se envia al usuario al menu correspondiente
             if clasif:
+                cur.execute("SELECT adminclasif FROM usuario WHERE idusuario = %s", (int(usrID),))
+                catAdmin = cur.fetchone()[0]
                 conn.close()
                 conn = pg2.connect("host=localhost dbname=Proyecto2G4 user="+usr+" password="+pas)
                 cur = conn.cursor()
-                MenuAdmin()
+                MenuAdmin(catAdmin)
                 return
             else:
                 MenuCliente(usrID)
@@ -699,74 +701,143 @@ def registroDiario():
 # --------------------------------- MENU ADMINS --------------------------------- #
 """ Menu de administrador
 
-:param usrID: ID del usuario que se esta registrando
+:param categoria: La categoria del administrador
 
 :return: None
 """
-def MenuAdmin():
-
+def MenuAdmin(categoria):
+   
     print("\n\nMENU ADMINISTRADOR")
+
+    if categoria  == 1:
+        menuAdminAdmin()
+    elif categoria == 2:
+        menuAdminUsuario()
+    elif categoria == 3:
+        menuAdminInstructores()
+    elif categoria == 4:
+        menuAdminSesiones()
+    elif categoria == 5:
+        menuAdminReportes()
+    else:
+        print("Categoria no valida")
+        return
+
+
+
+
+# --------------------------------- MENUS ADMINISTRADORES --------------------------------- #
+"""
+ADMIN ADMIN
+
+:return: None
+"""
+def menuAdminAdmin():
+    print("ADMINISTRADOR DE ADMINISTRADORES")
     print("¿Que desea hacer?")
-    print("1. Agregar, modificar, dar de baja a un instructor\n2. Agregar, modificar o dar de baja una sesion\n3. Modificar o dar de baja a un usuario\n4. Ver estadisticas\n5. Crear nuevo usuario de administrador\n6. Salir")
+    print("1. Agregar administrador\n2. Modificar administrador o dar de baja administrador\n3. Cerrar Sesion\n4. Salir")
     op = input()
     if op == "1":
-        print("¿Que desea hacer?\n1. Agregar instructor\n2. Modificar, reactivar o dar de baja instructor\n3. Regresar")
-        op2 = input()
-        if op2 == "1":
-            agregarInstructor()
-            return
-        elif op2 == "2":
-            modificarInstructor()
-            return
-        elif op2 == "3":
-            MenuAdmin()
-            return
-        else:
-            print("No ha marcado una opcion valida")
-            MenuAdmin()
-            return
-    elif op == "2":
-        print("¿Que desea hacer?\n1. Agregar sesion\n2. Modificar sesion\n3. Dar de baja sesion")
-        op2 = input()
-        if op2 == "1":
-            nuevaSesion()
-            return
-        elif op2 == "2":
-            modificarSesion()
-            return
-        elif op2 == "3":
-            eliminarSesion()
-            return
-        else:
-            print("No ha marcado una opcion valida")
-            MenuAdmin()
-            return
-    elif op == "3":
-        print("¿Que desea hacer?\n1. Modificar usuario\n2. Dar de baja usuario")
-        op2 = input()
-        if op2 == "1":
-            modificarUsuario()
-            return
-        elif op2 == "2":
-            bajaUsuario()
-            return
-        else:
-            print("No ha marcado una opcion valida")
-            MenuAdmin()
-            return
-    elif op == "4":
-        reportes()
-        return
-    elif op == "5":
         crearAdmin()
-        return
-    elif op == "6":
+    elif op == "2":
+        modificarAdmin()
+    elif op == "3":
+        main()
+    elif op == "4":
         print("Saliendo...")
         exit()
-    else:
-        print("No ha marcado una opcion valida")
-        MenuAdmin()
-        return
+
+
+"""
+ADMIN USUARIOS
+
+:return: None
+
+
+"""
+def menuAdminUsuario():
+    print("ADMINISTRADOR DE USUARIOS")
+    print("¿Que desea hacer?")
+    print("1. Modificar usuario \n2. Dar de baja usuario\n3. Cerrar Sesion\n4. Salir")
+    op = input()
+    if op == "1":
+        modificarUsuario()
+    elif op == "2":
+        bajaUsuario()
+    elif op == "3":
+        main()
+    elif op == "4":
+        print("Saliendo...")
+        exit() 
+
+
+"""
+ADMIN INSTRUCTORES
+
+:return: None
+"""
+def menuAdminInstructores():
+    print("ADMINISTRADOR DE INSTRUCTORES")
+    print("¿Que desea hacer?")
+    print("1. Agregar instructor\n2. Modificar instructor o dar de baja instructor\n3. Cerrar Sesion\n4. Salir")
+    op = input()
+    if op == "1":
+        agregarInstructor()
+    elif op == "2":
+        modificarInstructor()
+    elif op == "3":
+        main()
+    elif op == "4":
+        print("Saliendo...")
+        exit()
+
+def menuAdminSesiones():    
+    print("ADMINISTRADOR DE SESIONES")
+    print("¿Que desea hacer?")
+    print("1. Agregar sesion\n2. Modificar sesion o dar de baja sesion\n3. Cerrar Sesion\n4. Salir")
+    op = input()
+    if op == "1":
+        agregarSesion()
+    elif op == "2":
+        modificarSesion()
+    elif op == "3":
+        main()
+    elif op == "4":
+        print("Saliendo...")
+        exit()
+
+def menuAdminReportes():
+    print("ADMINISTRADOR DE REPORTES")
+    print("¿Que desea hacer?")
+    print("1. Reporte de usuarios\n2. Reporte de instructores\n3. Reporte de sesiones\n4. Cerrar Sesion\n5. Salir")
+    op = input()
+    if op == "1":
+        reporteUsuarios()
+    elif op == "2":
+        reporteInstructores()
+    elif op == "3":
+        reporteSesiones()
+    elif op == "4":
+        main()
+    elif op == "5":
+        print("Saliendo...")
+        exit()
+
+
+
+
+#--------------------------FUNCIONES ADMINS--------------------------#
+
+
+
+
+
+"""
+Crear un nuevo instructor
+
+:return: None
+
+"""
 
 def agregarInstructor():
     print("Desea agregar un instructor?\n1. Si\n2. No, regresar a menu de administradores")
@@ -791,6 +862,13 @@ def agregarInstructor():
 
     return
 
+"""
+Modificar un instructor
+
+:return: None
+
+
+"""
 def modificarInstructor():
     print("Desea modificar un instructor 1. Si 2. No, regresar a menu de administradores")
     op1 = input()
@@ -868,6 +946,14 @@ def modificarInstructor():
         modificarInstructor()
         return
 
+
+"""
+Crear sesion
+
+:return: None
+
+
+"""
 def nuevaSesion():
     print("Desea agregar una nueva sesion?\n1. Si\n2. No, regresar a menu de administradores")
     op = input()
@@ -961,6 +1047,13 @@ def nuevaSesion():
     MenuAdmin()
     return
 
+
+
+"""
+Modificar una sesion
+
+:return: None
+"""
 def modificarSesion():
 
     cur.execute("SELECT * FROM sesion WHERE fecha >= CURRENT_DATE ORDER BY idsesion ASC")
@@ -1115,6 +1208,12 @@ def modificarSesion():
         MenuAdmin()
         return
 
+
+"""
+Eliminar una sesion
+
+
+"""
 def eliminarSesion():
     print("Eliminar sesion")
     cur.execute("SELECT * FROM sesion WHERE fecha >= CURRENT_DATE ORDER BY idsesion ASC")
@@ -1145,6 +1244,12 @@ def eliminarSesion():
     MenuAdmin()
     return
 
+
+"""
+Modificar a un usuario
+
+:returns: None
+"""
 def modificarUsuario():
     print("Modificar usuario")
     cur.execute("SELECT * FROM usuario ORDER BY idusuario ASC")
@@ -1275,7 +1380,13 @@ def modificarUsuario():
         return
 
 
+"""
+Dar de baja un usuario
 
+:return: None
+
+
+"""
 def bajaUsuario():
     cur.execute("SELECT * FROM usuario")
     usuarios = cur.fetchall()
@@ -1302,6 +1413,13 @@ def bajaUsuario():
     MenuAdmin()
     return
 
+
+"""
+Funciones de reporteria 
+
+:return: None
+
+"""
 def reportes():
     print("¿Que reporte desea ver?")
     print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6. Salir")
@@ -1391,6 +1509,12 @@ def reportes():
         return
 
 
+"""
+Crear un nuevo administrador
+
+:return: None
+
+"""
 def crearAdmin():
     print("Ingrese los datos del nuevo administrador")
     cur.execute("SELECT idUsuario FROM Usuario ORDER BY idUsuario DESC LIMIT 1")
@@ -1401,6 +1525,16 @@ def crearAdmin():
     nombre = input("Nombre: ")
     apellido = input("Apellido: ")
     fechanac = input("Fecha de nacimiento en formato YYYY-MM-DD: ")
+    cur.execute("SELECT * FROM adminClasificaciones")
+    catAdmins = cur.fetchall()
+    catIDs = []
+    for i in range (0,len(catAdmins)):
+        catIDs.append(catAdmins[i][0])
+    print("Categoria:")
+    for i in range (0,len(catAdmins)):
+        print("ID:",catAdmins[i][0], ",Decripcion :", catAdmins[i][1])
+
+    idcategoria = input("ID de la categoria del nuevo administrador: ")
     try:
         datetime.strptime(fechanac, '%Y-%m-%d')
     except ValueError:
@@ -1408,8 +1542,8 @@ def crearAdmin():
         crearAdmin()
         return
     direccion = input("Direccion: ")
-    cur.execute("INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio) VALUES (%s, %s, %s, %s, '1', %s, %s, %s, %s, '1', CURRENT_DATE)",
-    (newID, username, password, email, nombre, apellido, fechanac, direccion))
+    cur.execute("INSERT INTO usuario (idusuario, username, userpassword, email, activo, nombre, apellido, fechanacimiento, direccion, clasificacion, fechainicio, adminclasif) VALUES (%s, %s, %s, %s, '1', %s, %s, %s, %s, '1', CURRENT_DATE, %s)",
+    (newID, username, password, email, nombre, apellido, fechanac, direccion, idcategoria))
     conn.commit()
     print("Administrador creado con exito")
     MenuAdmin()
