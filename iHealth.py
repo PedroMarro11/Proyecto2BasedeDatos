@@ -16,11 +16,13 @@ import getpass
 
 
 #Conexión a la base de datos, utilizamos ElephantSQL para tener la base de datos en nube
+"""
 up.uses_netloc.append("postgres")
 url = up.urlparse("postgres://evsboafc:VOcaeA4yK8m4T9F-Ml7qf7-yWJ6UzFpx@babar.db.elephantsql.com/evsboafc")
 conn = pg2.connect(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port )
+"""
 
-
+conn = pg2.connect("host=localhost dbname=Proyecto2G4 user=postgres password=murcielago122")
 #Conectar base de datos
 cur = conn.cursor()
 
@@ -53,11 +55,13 @@ def main():
 
 
 
-"""Función para hace LOG IN
+"""Función para hacer LOG IN
 
 :return: usrID, el ID del usuario que se logueo.
 """
 def SignIn():
+    global conn
+    global cur
     print("INICIAR SESION")
     print("\n1. Continuar\n2. Regresar a Inicio")
     opc = input("Ingrese su eleccion: ")
@@ -77,6 +81,9 @@ def SignIn():
 
             #Se envia al usuario al menu correspondiente
             if clasif:
+                conn.close()
+                conn = pg2.connect("host=localhost dbname=Proyecto2G4 user="+usr+" password="+pas)
+                cur = conn.cursor()
                 MenuAdmin()
                 return
             else:
@@ -697,6 +704,7 @@ def registroDiario():
 :return: None
 """
 def MenuAdmin():
+
     print("\n\nMENU ADMINISTRADOR")
     print("¿Que desea hacer?")
     print("1. Agregar, modificar, dar de baja a un instructor\n2. Agregar, modificar o dar de baja una sesion\n3. Modificar o dar de baja a un usuario\n4. Ver estadisticas\n5. Crear nuevo usuario de administrador\n6. Salir")

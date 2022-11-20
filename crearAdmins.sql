@@ -15,28 +15,35 @@ RETURNS TRIGGER AS $$
 DECLARE
     usernombre VARCHAR(12);
     userpass VARCHAR(12);
+    existencia NAME;
 BEGIN
 
     usernombre = new.username;
     userpass = new.userpassword;
     
+    
     IF new.clasificacion = '1' THEN
-        IF new.adminClasif = 1 THEN
-            
-            execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminadmin';
-        END IF;
-        IF new.adminClasif = 2 THEN
-            execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP admiusuarios';
-        END IF;
-        IF new.adminClasif = 3 THEN
-            execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP admininstructores';
-        END IF;
-        IF new.adminClasif = 4 THEN
-            execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminsesiones';
-        END IF;
-        IF new.adminClasif = 5 THEN
-            execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminreportes';
-        END IF;
+        SELECT rolname INTO existencia FROM PG_ROLES WHERE rolname = usernombre;
+        
+        IF usernombre IS NOT NULL THEN
+        
+            IF new.adminClasif = 1 THEN
+
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminadmin';
+            END IF;
+            IF new.adminClasif = 2 THEN
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminusuarios';
+            END IF;
+            IF new.adminClasif = 3 THEN
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP admininstructores';
+            END IF;
+            IF new.adminClasif = 4 THEN
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminsesiones';
+            END IF;
+            IF new.adminClasif = 5 THEN
+                execute 'CREATE USER ' || QUOTE_IDENT(usernombre) || ' WITH PASSWORD ' || QUOTE_literal(userpass) || ' IN GROUP adminreportes';
+            END IF;
+       END IF;
     END IF;
     
     RETURN NEW;
@@ -46,7 +53,7 @@ $$ LANGUAGE PLPGSQL;
 
 
 CREATE OR REPLACE TRIGGER nuevoAdmin
-AFTER INSERT 
+AFTER INSERT OR UPDATE 
 ON usuario
     FOR EACH ROW EXECUTE FUNCTION nuevoAdmin();
     
@@ -57,5 +64,4 @@ VALUES (9, 'adminprueba', 'hola', 'prueba', '1','prueba','prueba',CURRENT_DATE,'
 
 
 
-SELECT * FROM PG_ROLES;
     
