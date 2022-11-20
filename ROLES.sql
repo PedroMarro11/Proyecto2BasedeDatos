@@ -12,8 +12,9 @@ GRANT ALL PRIVILEGES on instructor, nutricionista, consulta TO admininstructores
 GRANT SELECT on instructor, categoria TO adminsesiones;
 GRANT SELECT on usuariosesion, sesion, categoria, instructor, usuario, bitacora TO adminreportes;
 GRANT ALL PRIVILEGES ON categoria, bitacora, consulta, infopago, instructor, nutricionista, registro, sesion, smartwatch, usuario, usuariosesion TO adminadmin;
-GRANT INSERT ON bitacora TO adminusuarios, adminsesiones, adminadmin, admininstructores, adminreportes;
+GRANT INSERT, SELECT ON bitacora TO adminusuarios, adminsesiones, adminadmin, admininstructores, adminreportes;
 GRANT ALL PRIVILEGES ON adminClasificaciones TO adminadmin;
+GRANT DELETE, SELECT ON infopago TO adminusuarios; 
 
 
 DROP OWNED by adminadmin;
