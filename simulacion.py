@@ -92,7 +92,3 @@ def simular(fecha, usuarios, conn, cur):
 
     print("Simulación exitosa.")
     return
-
-conn = pg2.connect("host=localhost dbname=Proyecto2G4 user=postgres password=Itachi1104!")
-cur = conn.cursor()
-simular('2022-11-19',5,conn,cur)

@@ -13,7 +13,7 @@ import sys
 from tkinter import Menu
 import psycopg2 as pg2
 import getpass
-
+import simulacion
 
 #Conexión a la base de datos, utilizamos ElephantSQL para tener la base de datos en nube
 """
@@ -719,7 +719,7 @@ def registroDiario():
 :return: None
 """
 def MenuAdmin(categoria):
-   
+
     print("\n\nMENU ADMINISTRADOR")
 
     if categoria  == 1:
@@ -781,7 +781,7 @@ def menuAdminUsuario():
         main()
     elif op == "4":
         print("Saliendo...")
-        exit() 
+        exit()
 
 
 """
@@ -811,7 +811,7 @@ MENU ADMINSESIONES
 
 
 """
-def menuAdminSesiones():    
+def menuAdminSesiones():
     print("ADMINISTRADOR DE SESIONES")
     print("¿Que desea hacer?")
     print("1. Agregar sesion\n2. Modificar sesion \n3. Dar de baja sesion\n4. Cerrar Sesion\n5. Salir")
@@ -1472,7 +1472,7 @@ def bajaUsuario():
 
 
 """
-Funciones de reporteria 
+Funciones de reporteria
 
 :return: None
 

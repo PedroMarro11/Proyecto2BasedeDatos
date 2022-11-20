@@ -15,7 +15,7 @@ GRANT ALL PRIVILEGES ON categoria, bitacora, consulta, infopago, instructor, nut
 GRANT INSERT, SELECT ON bitacora TO adminusuarios, adminsesiones, adminadmin, admininstructores, adminreportes;
 GRANT ALL PRIVILEGES ON adminClasificaciones TO adminadmin;
 GRANT DELETE, SELECT ON infopago TO adminusuarios; 
-
+GRANT SELECT ON usuario TO adminsesiones;
 
 DROP OWNED by adminadmin;
 DROP OWNED by adminusuarios;
