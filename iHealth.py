@@ -1014,12 +1014,14 @@ def nuevaSesion():
     instructor = input("Ingrese el ID del instructor que dara la sesion: ")
     if instructor.isnumeric():
         instructor = int(instructor)
-        if instructor < 1 or instructor > len(instructores):
-            print("No ha ingresado una ID valido")
-            nuevaSesion()
-            return
-    instNum = instructor-1
-    if instructores[instNum][3] == 0:
+    cur.execute("SELECT * FROM instructor WHERE idinstructor = %s", (instructor,))
+    instSesion = cur.fetchall()
+    if len(instSesion) == 0:
+        print("No ha ingresado una ID valido")
+        nuevaSesion()
+        return
+    instNum = instSesion[0][0]
+    if instSesion[0][0] == False:
         print("El instructor no esta activo")
         nuevaSesion()
         return
@@ -1077,7 +1079,7 @@ def nuevaSesion():
         return
 
     #Insertar sesion
-    cur.execute("INSERT INTO sesion (idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES (%s, %s, %s, %s, %s, %s)", (id, instructor, selecCategoria, fecha, hora, duracion))
+    cur.execute("INSERT INTO sesion (idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES (%s, %s, %s, %s, %s, %s)", (id, instNum, selecCategoria, fecha, hora, duracion))
     conn.commit()
     print("Sesion agregada con exito")
     menuAdminSesiones()
@@ -1525,14 +1527,6 @@ def reportes():
             print("No ha ingresado fechas validas")
             reportes()
             return
-        if (fecha1valid >= hoy):
-            print("No ha ingresado un intervalo valido.")
-            reportes()
-            return
-        if (fecha2valid > hoy):
-            print("No ha ingresado un intervalo valido.")
-            reportes()
-            return
         if(fecha1valid >= fecha2valid):
             print("No ha ingresado un intervalo valido.")
             reportes()
@@ -1710,7 +1704,7 @@ def reportes():
         else:
             print("Top 20 usuarios que no han hecho ejercicio en las ultimas 3 semanas:")
             for i in range (0,len(usuarios)):
-                print("ID usuario:", usuarios[i][0], ",Nombre: ", usuarios[i][1], usuarios[i][2])
+                print("ID usuario:", usuarios[i][0], ", Username: ", usuarios[i][1],", Fecha de ultima sesion:", usuarios[i][2])
         menuAdminReportes()
         return
     elif op == 10:
