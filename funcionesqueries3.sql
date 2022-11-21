@@ -63,3 +63,30 @@ SELECT adminname, COUNT(cambioid) FROM bitacora WHERE fecha >= '2022-11-20' AND 
 
 
 -- FUNCION 4 PROYECTO 3
+
+-- query
+SELECT usuario.idusuario, usuario.username, max(sesion.fecha)
+FROM usuariosesion NATURAL JOIN usuario NATURAL JOIN sesion
+GROUP BY usuario.idusuario, usuario.username
+HAVING max(sesion.fecha) <= (now() - interval '3 weeks')
+ORDER BY max(sesion.fecha) desc
+LIMIT 20
+
+CREATE OR REPLACE FUNCTION top20usuarios3semanas()
+    RETURNS TABLE (
+        usuarioid INT,
+        usuariousername varchar(12),
+        lastexercise DATE
+    ) AS $$
+        BEGIN
+            RETURN QUERY SELECT
+            usuario.idusuario, usuario.username, max(sesion.fecha)
+            FROM usuariosesion NATURAL JOIN usuario NATURAL JOIN sesion
+            GROUP BY usuario.idusuario, usuario.username
+            HAVING max(sesion.fecha) <= (now() - interval '3 weeks')
+            ORDER BY max(sesion.fecha) desc
+            LIMIT 20;
+        END; $$
+        LANGUAGE plpgsql;
+     
+SELECT * FROM top20usuarios3semanas();

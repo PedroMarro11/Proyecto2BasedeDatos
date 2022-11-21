@@ -1494,7 +1494,7 @@ Funciones de reporteria
 """
 def reportes():
     print("¿Que reporte desea ver?")
-    print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6.El top 5 de las sesiones que mas usuarios tuvieron en cada hora entre 9:00 a.m a 6:00p.m para un día dado.\n. Salir")
+    print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6. Top 5 de las sesiones que mas usuarios tuvieron en cada hora entre 9:00 a.m a 6:00 p.m para un día dado.\n7. Top 5 instructores para una semana\n8. Top 5 admins con mas cambios en bitacora para intervalo\n9. Top 20 usuarios que no han hecho sesiones en las ultimas 3 semanas\n10. Regresar")
     op = input("Ingrese una opcion: ")
     if op.isnumeric():
         op = int(op)
@@ -1680,8 +1680,8 @@ def reportes():
             print("Top 5 instructores de la semana "+str(instructores[0][4])+":")
             for i in range (0,len(instructores)):
                 print("ID instructor:", instructores[i][0], ",Nombre: ", instructores[i][1], instructores[i][2], ",Cantidad de usuarios que han ido a sus sesiones:", instructores[i][3])
-            menuAdminReportes()
-            return
+        menuAdminReportes()
+        return
     elif op == 8:
         fechaini = input("Ingrese la fecha de inicio del intervalo que desea buscar YYYY-MM-DD: ")
         fechafin = input("Ingrese la fecha de fin del intervalo que desea buscar YYYY-MM-DD: ")
@@ -1699,9 +1699,23 @@ def reportes():
         else:
             print("Top 5 administradores que han hecho mas cambios en el intervalo "+fechaini+" - "+fechafin+":")
             for i in range (0,len(admins)):
-                print("ID administrador:", admins[i][0], ",Nombre: ", admins[i][1], admins[i][2], ",Cantidad de cambios:", admins[i][3])
-            menuAdminReportes()
-            return
+                print("Administrador:", admins[i][0], ", Cantidad de cambios:", admins[i][1])
+        menuAdminReportes()
+        return
+    elif op == 9:
+        cur.execute("SELECT * FROM top20usuarios3semanas()")
+        usuarios = cur.fetchall()
+        if (len(usuarios) == 0):
+            print("No hay usuarios que no hayan hecho ejercicio en las ultimas 3 semanas.")
+        else:
+            print("Top 20 usuarios que no han hecho ejercicio en las ultimas 3 semanas:")
+            for i in range (0,len(usuarios)):
+                print("ID usuario:", usuarios[i][0], ",Nombre: ", usuarios[i][1], usuarios[i][2])
+        menuAdminReportes()
+        return
+    elif op == 10:
+        menuAdminReportes()
+        return
 
 
 """

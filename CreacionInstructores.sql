@@ -1,6 +1,5 @@
 INSERT INTO instructor(idinstructor, nombre, apellido, activo, fechainicio)
-VALUES (7, 'Dwayne', 'Johnson', true, '2022-10-15'),
-(8, 'Clark', 'Kent', true, '2022-10-15'),
+VALUES (8, 'Clark', 'Kent', true, '2022-10-15'),
 (9, 'Chris', 'Heria', true, '2022-10-15'),
 (10, 'Peter', 'Parker', true, '2022-10-15'),
 (11, 'Diana', 'Prince', true, '2022-10-15'),
