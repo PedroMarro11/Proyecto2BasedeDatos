@@ -31,7 +31,8 @@ def simular(fecha, usuarios, conn, cur):
         cat = random.randint(1,len(categorias))
         simCategorias.append(cat)
 
-    horas = ["13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00"]
+    horas = ["09:00:00","10:00:00","11:00:00","12:00:00","13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00", "18:00:00"]
+    simHoras = random.sample(horas, 5)
     duraciones = [30, 60]
     simDuraciones = []#obtener 5 duraciones
     for i in range(0,5):
@@ -45,7 +46,7 @@ def simular(fecha, usuarios, conn, cur):
         cur.execute("SELECT idsesion FROM sesion ORDER BY idsesion DESC LIMIT 1")
         idsesion = cur.fetchone()[0]+1#tiene que ser un nuevo número de sesion cada iteración
         #posteriormente se inserta la sesion nueva en la tabla de sesiones
-        cur.execute("INSERT INTO sesion(idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES(%s,%s,%s,%s,%s,%s)", (idsesion, simInstructores[i],simCategorias[i],fecha, horas[i], simDuraciones[i]))
+        cur.execute("INSERT INTO sesion(idsesion, idinstructor, idcategoria, fecha, hora, duracion) VALUES(%s,%s,%s,%s,%s,%s)", (idsesion, simInstructores[i],simCategorias[i],fecha, simHoras[i], simDuraciones[i]))
         conn.commit()
         #se guarda la sesion actual usuarios/5 veces para sus usuario/5 participantes participantes
         for j in range(0, int(usuarios/5)):
