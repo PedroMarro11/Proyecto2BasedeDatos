@@ -13,7 +13,7 @@ import sys
 from tkinter import Menu
 import psycopg2 as pg2
 import getpass
-import simulacion
+from simulacion import simular
 
 #Conexión a la base de datos, utilizamos ElephantSQL para tener la base de datos en nube
 """
@@ -814,7 +814,7 @@ MENU ADMINSESIONES
 def menuAdminSesiones():
     print("ADMINISTRADOR DE SESIONES")
     print("¿Que desea hacer?")
-    print("1. Agregar sesion\n2. Modificar sesion \n3. Dar de baja sesion\n4. Cerrar Sesion\n5. Salir")
+    print("1. Agregar sesion\n2. Modificar sesion \n3. Dar de baja sesion\n4. Simular sesiones\n5. Cerrar Sesion\n6. Salir")
     op = input()
     if op == "1":
         nuevaSesion()
@@ -823,8 +823,10 @@ def menuAdminSesiones():
     elif op == "3":
         eliminarSesion()
     elif op == "4":
-        main()
+        simularSesiones()
     elif op == "5":
+        main()
+    elif op == "6":
         print("Saliendo...")
         exit()
 
@@ -850,7 +852,20 @@ def menuAdminReportes():
 #--------------------------FUNCIONES ADMINS--------------------------#
 
 
-
+def simularSesiones():
+    print("Simulacion de sesiones")
+    print("¿Que desea hacer?")
+    print("A cuantos usuarios desea simular sesiones? (ingrese solo multiplos de 5)")
+    op = input()
+    if int(op) % 5 != 0:
+        print("No ha ingresado un numero valido")
+        simularSesiones()
+        return
+    print("Ingrese la fecha en la que desea simular las sesiones (YYYY-MM-DD)")
+    fecha = input()
+    simular(fecha, int(op), conn, cur)
+    menuAdminSesiones()
+        
 
 
 """
@@ -1479,11 +1494,11 @@ Funciones de reporteria
 """
 def reportes():
     print("¿Que reporte desea ver?")
-    print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6. Salir")
+    print("1. Las 10 sesions que mas usuarios tuvieron.\n2. Sesiones y usuarios por categoria\n3. Top 5 entrenadores\n4. Cuentas diamante creadas en los ultimos 6 meses\n5. Hora pico en una fecha especifica\n6.El top 5 de las sesiones que mas usuarios tuvieron en cada hora entre 9:00 a.m a 6:00p.m para un día dado.\n. Salir")
     op = input("Ingrese una opcion: ")
     if op.isnumeric():
         op = int(op)
-        if op <1 or op >6:
+        if op <1 or op >9:
             print("No ha ingresado una opcion valida")
             reportes()
             return
@@ -1562,8 +1577,131 @@ def reportes():
         menuAdminReportes()
         return
     elif op == 6:
+        fecha = input("Ingrese la fecha en formato YYYY-MM-DD: ")
+        try:
+            datetime.strptime(fecha, '%Y-%m-%d')
+        except ValueError:
+            print("No ha ingresado una fecha valida")
+            reportes()
+            return
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '09:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 9:00 a.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 9:00 a.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '10:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 10:00 a.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 10:00 a.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '11:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 11:00 a.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 11:00 a.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '12:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 12:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 12:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '13:00:00')", (fecha,))
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a la 1:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a la 1:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '14:00:00')", (fecha,))
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 2:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 2:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '15:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 3:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 3:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '16:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 4:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 4:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '17:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 5:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 5:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
+        cur.execute("SELECT * FROM top5sesionesdiahora(%s, '18:00:00')", (fecha,))
+        sesiones = cur.fetchall()
+        if (len(sesiones) == 0):
+            print("No hay sesiones registradas a las 6:00 p.m. este dia.")
+        else: 
+            print("Las 5 sesiones que mas usuarios tuvieron el "+fecha+" a las 6:00 p.m. son:")
+            for i in range (0,len(sesiones)):
+                print("ID de sesion Sesion:", sesiones[i][0], ",Usuarios:", sesiones[i][1])
         menuAdminReportes()
         return
+    elif op == 7:
+        fecha = input("Ingrese la fecha de un día de la semana que desea analizar en formato YYYY-MM-DD: ")
+        try:
+            datetime.strptime(fecha, '%Y-%m-%d')
+        except ValueError:
+            print("No ha ingresado una fecha valida")
+            reportes()
+            return
+        cur.execute("SELECT * FROM topinstructoressemana(%s)", (fecha,))
+        instructores = cur.fetchall()
+        if (len(instructores) == 0):
+            print("No hay sesiones registradas este dia.")
+        else:
+            print("Top 5 instructores de la semana "+str(instructores[0][4])+":")
+            for i in range (0,len(instructores)):
+                print("ID instructor:", instructores[i][0], ",Nombre: ", instructores[i][1], instructores[i][2], ",Cantidad de usuarios que han ido a sus sesiones:", instructores[i][3])
+            menuAdminReportes()
+            return
+    elif op == 8:
+        fechaini = input("Ingrese la fecha de inicio del intervalo que desea buscar YYYY-MM-DD: ")
+        fechafin = input("Ingrese la fecha de fin del intervalo que desea buscar YYYY-MM-DD: ")
+        try:
+            datetime.strptime(fechaini, '%Y-%m-%d')
+            datetime.strptime(fechafin, '%Y-%m-%d')
+        except ValueError:
+            print("No ha ingresado fechas validas")
+            reportes()
+            return
+        cur.execute("SELECT * FROM top5adminscambios(%s, %s)", (fechaini, fechafin))
+        admins = cur.fetchall()
+        if (len(admins) == 0):
+            print("No hay cambios registrados en este intervalo.")
+        else:
+            print("Top 5 administradores que han hecho mas cambios en el intervalo "+fechaini+" - "+fechafin+":")
+            for i in range (0,len(admins)):
+                print("ID administrador:", admins[i][0], ",Nombre: ", admins[i][1], admins[i][2], ",Cantidad de cambios:", admins[i][3])
+            menuAdminReportes()
+            return
 
 
 """
