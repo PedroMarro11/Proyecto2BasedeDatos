@@ -4,6 +4,8 @@ Este es el repositorio del Proyecto 2 y 3 de Base de Datos 1 del Grupo 4
 
 Descripcion de documentos:
 
+Proyecto#3 Grupo4.pdf: Documento con diccionario de datos, link al githb, diagrama entidad relacion.
+
 Contarhoras.sql: Codigo para ver la cantidad de horas simuladas
 
 CreacionInstructores.sql: Insert de 15 instructores.
